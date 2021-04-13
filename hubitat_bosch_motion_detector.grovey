@@ -1,4 +1,15 @@
-   /*
+     /*
+
+https://github.com/tmastersmart/bosch/blob/main/hubitat_bosch_motion_detector.grovey
+https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.grovey
+converted to hubitat
+
+
+
+
+
+forked from namespace: "tomasaxerot", author: "Tomas Axerot")
+
  *  Copyright 2017 Tomas Axerot
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -17,7 +28,7 @@ import  hubitat.zigbee.clusters.iaszone.ZoneStatus
 
 
 metadata {
-	definition(name: "Bosch Motion Detector (custom)", namespace: "tomasaxerot", author: "Tomas Axerot") {
+	definition(name: "Bosch Motion Detector (custom)", namespace: "tmastersmart", author: "Tmaster",importUrl: "https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.grovey" ) {
 		capability "Motion Sensor"
 		capability "Configuration"
 		capability "Battery"
