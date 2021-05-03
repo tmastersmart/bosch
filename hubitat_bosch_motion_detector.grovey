@@ -2,7 +2,7 @@
 
 Bosch Motion Detector  driver for hubitat
 ISW-ZPR1-WP13 and ISW-ZDL1-WP11G
-With battery support 
+With battery support. this is a work in process trying to get the battery reporting to work. 
 
 converted to hubitat..  update 5/3/21  v1.2
 
