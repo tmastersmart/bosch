@@ -1,14 +1,21 @@
-     /*
+/*
+
+Bosch Motion Detector  driver for hubitat
+ISW-ZPR1-WP13 and ISW-ZDL1-WP11G
+With battery support 
+
+converted to hubitat..  update 5/3/21  v1.2
 
 https://github.com/tmastersmart/bosch/blob/main/hubitat_bosch_motion_detector.grovey
 https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.grovey
-converted to hubitat
 
 
 
 
 
-forked from namespace: "tomasaxerot", author: "Tomas Axerot")
+
+forked from namespace: "tomasaxerot" 
+               author: "Tomas Axerot"
 
  *  Copyright 2017 Tomas Axerot
  *
@@ -28,7 +35,7 @@ import  hubitat.zigbee.clusters.iaszone.ZoneStatus
 
 
 metadata {
-	definition(name: "Bosch Motion Detector (custom)", namespace: "tmastersmart", author: "Tmaster",importUrl: "https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.grovey" ) {
+	definition(name: "Bosch Motion Detector (ISW-ZPR1-WP13)", namespace: "tmastersmart", author: "Tmaster",importUrl: "https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.grovey" ) {
 		capability "Motion Sensor"
 		capability "Configuration"
 		capability "Battery"
@@ -43,10 +50,7 @@ metadata {
         fingerprint inClusters: "0000,0001,0003,0402,0500,0020,0B05", outClusters: "0019", manufacturer: "Bosch", model: "ISW-ZPR1-WP13", deviceJoinName: "Bosch PIR Motion Detector"
 	}
 
-	simulator {
-		status "active": "zone report :: type: 19 value: 0031"
-		status "inactive": "zone report :: type: 19 value: 0030"
-	}
+
 
 	preferences {
 		input "debugOutput", "bool", 
@@ -55,7 +59,7 @@ metadata {
 			displayDuringSetup: false, 
 			required: false
 		
-			input title: "Temperature Offset", description: "This feature allows you to correct any temperature variations by selecting an offset. Ex: If your sensor consistently reports a temp that's 5 degrees too warm, you'd enter '-5'. If 3 degrees too cold, enter '+3'.", displayDuringSetup: false, type: "paragraph", element: "paragraph"
+//			input title: "Temperature Offset", description: "Temp offset", displayDuringSetup: false, type: "paragraph", element: "paragraph"
 			input "tempOffset", "number", title: "Degrees", description: "Adjust temperature by this many degrees", range: "*..*", displayDuringSetup: false
 		
 	}
@@ -72,7 +76,35 @@ def parse(String description) {
 		} else {
 			Map descMap = zigbee.parseDescriptionAsMap(description)
 			if (descMap?.clusterInt == 0x0001 && descMap.attrInt == 0x0020 && descMap.commandInt != 0x07 && descMap?.value) {
+                
+                def volts = descMap.value
+                
+                def maxVolts = 6.0
+                def minVolts = 5.0
+            if (model == "ISW-ZDL1-WP11G") {   
+	           minVolts = 30        
+               maxVolts = 60
+           }else if(model == "ISW-ZPR1-WP13") {
+                		minVolts = 15
+			            maxVolts = 30  
+            }
+                
+	        
+	        def batteryPercentages = (volts - minVolts ) / (maxVolts - minVolts)	
+            def batteryLevel = (int) batteryPercentages * 100
+            if (batteryLevel > 100) {batteryLevel​ = 100}
+            if (batteryLevel < 1) {batteryLevel​ = 0}  
+            logDebug "Set Battery to ${batteryLevel}% {battest}v​ line94"
+            result << createEvent(name: "battery", value: batteryLevel, unit:"%")       
+                
+                
 				map = getBatteryResult(Integer.parseInt(descMap.value, 16))
+                
+                logDebug "Old bat routine says {map} "
+
+                
+                
+                
 			} else if (descMap?.clusterInt == zigbee.TEMPERATURE_MEASUREMENT_CLUSTER && descMap.commandInt == 0x07) {
 				if (descMap.data[0] == "00") {
 					log.debug "TEMP REPORTING CONFIG RESPONSE: $descMap"
@@ -90,9 +122,25 @@ def parse(String description) {
 		if (tempOffset) {
 			map.value = (int) map.value + (int) tempOffset
 		}
-		map.descriptionText = temperatureScale == 'C' ? '{{ device.displayName }} was {{ value }}°C' : '{{ device.displayName }} was {{ value }}°F'
+		map.descriptionText = temperatureScale == 'C' ? 'map.value ' : ' map.value °F'
 		map.translatable = true
 	}
+    
+// alt backup routine. Others not working......
+    else  if (map.name == "batteryVoltage") {
+            def battest = map.value 
+            def maxVolts = 6.0
+	        def minVolts = 5.0
+	        def volts = (battest)
+	        def batteryPercentages = (volts - minVolts ) / (maxVolts - minVolts)	
+            def batteryLevel = (int) batteryPercentages * 100
+            if (batteryLevel > 100) {batteryLevel​ = 100}
+            if (batteryLevel < 1) {batteryLevel​ = 0}            
+        logDebug "Set Battery to ${batteryLevel}% {battest}v  line136"
+            result << createEvent(name: "battery", value: batteryLevel, unit:"%")
+        }
+    
+    
 
 	log.debug "Parse returned $map"
 	def result = map ? createEvent(map) : [:]
@@ -124,7 +172,7 @@ private Map getBatteryResult(rawValue) {
 	if (!(rawValue == 0 || rawValue == 255)) {
 		result.name = 'battery'
 		result.translatable = true
-		result.descriptionText = "{{ device.displayName }} battery was {{ value }}%"		
+		result.descriptionText = " battery was rawValue%"		
         
 		def model = device.getDataValue("model")
         def volts = rawValue // For the batteryMap to work the key needs to be an int
@@ -155,7 +203,8 @@ private Map getBatteryResult(rawValue) {
 		else if (volts > maxVolts)
 			volts = maxVolts
 		
-		result.value = batteryMap[volts]		
+
+        
 	}
 
 	return result
@@ -163,7 +212,7 @@ private Map getBatteryResult(rawValue) {
 
 private Map getMotionResult(value) {
 	log.debug 'motion'
-	String descriptionText = value == 'active' ? "{{ device.displayName }} detected motion" : "{{ device.displayName }} motion has stopped"
+	String descriptionText = value == 'active' ? " detected motion" : " motion has stopped"
 	return [
 			name           : 'motion',
 			value          : value,
