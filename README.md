@@ -1,5 +1,5 @@
 # bosch
 
-This is a work in progress..........
+ISW-ZPR1-WP13 and ISW-ZDL1-WP11G  Motion detector driver.
 
-You may try it its working for me but needs some more work before I move it to main archive.
+This fixes some bat detection problems I was having.
