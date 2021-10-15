@@ -6,8 +6,8 @@ With battery support. this is a work in process trying to get the battery report
 
 converted to hubitat..  update 5/3/21  v1.2
 
-https://github.com/tmastersmart/bosch/blob/main/hubitat_bosch_motion_detector.grovey
-https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.grovey
+https://github.com/tmastersmart/bosch
+https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.groovy
 
 
 
@@ -35,7 +35,7 @@ import  hubitat.zigbee.clusters.iaszone.ZoneStatus
 
 
 metadata {
-	definition(name: "Bosch Motion Detector (ISW-ZPR1-WP13)", namespace: "tmastersmart", author: "Tmaster",importUrl: "https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.grovey" ) {
+	definition(name: "Bosch Motion Detector (ISW-ZPR1-WP13)", namespace: "tmastersmart", author: "Tmaster",importUrl: "https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.groovy" ) {
 		capability "Motion Sensor"
 		capability "Configuration"
 		capability "Battery"
