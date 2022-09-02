@@ -1,19 +1,17 @@
-/*
-
-Bosch Motion Detector  driver for hubitat
+/*Bosch Motion Detector  driver for hubitat
 ISW-ZPR1-WP13 and ISW-ZDL1-WP11G
-With battery support. this is a work in process trying to get the battery reporting to work. 
-
-converted to hubitat..  update 5/3/21  v1.2
-
-https://github.com/tmastersmart/bosch
-https://github.com/tmastersmart/bosch/raw/main/hubitat_bosch_motion_detector.groovy
+With battery support. 
 
 
+This project is closed I no longer have a working device. 
+So you may use this code but no more updates.
 
+this is a work in process trying to get the battery reporting to work. 
 
+=============================================================
+v1.2  5/3/21  converted to hubitat..
 
-
+=============================================================
 forked from namespace: "tomasaxerot" 
                author: "Tomas Axerot"
 
